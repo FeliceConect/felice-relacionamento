@@ -2,26 +2,288 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Background and Foreground */
+    --background: 40 20% 98%; /* Off-white suave */
+    --foreground: 15 10% 18%; /* Café */
+
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 15 10% 18%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 15 10% 18%;
+
+    /* Primary - Dourado */
+    --primary: 33 44% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Vinho */
+    --secondary: 358 32% 31%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted - Fendi */
+    --muted: 30 12% 76%;
+    --muted-foreground: 15 10% 35%;
+
+    /* Accent - Seda */
+    --accent: 35 23% 82%;
+    --accent-foreground: 15 10% 18%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and Input */
+    --border: 30 15% 75%;
+    --input: 30 15% 75%;
+    --ring: 33 44% 57%;
+
+    /* Radius */
+    --radius: 0.5rem;
+
+    /* Chart colors */
+    --chart-1: 33 44% 57%; /* Dourado */
+    --chart-2: 358 32% 31%; /* Vinho */
+    --chart-3: 30 15% 62%; /* Nude */
+    --chart-4: 35 23% 82%; /* Seda */
+    --chart-5: 30 12% 76%; /* Fendi */
+  }
+
+  /* Dark mode - mesmo tema para consistência de marca */
+  .dark {
+    --background: 15 10% 12%;
+    --foreground: 35 23% 90%;
+
+    --card: 15 10% 15%;
+    --card-foreground: 35 23% 90%;
+
+    --popover: 15 10% 15%;
+    --popover-foreground: 35 23% 90%;
+
+    --primary: 33 44% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 358 32% 31%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 15 10% 25%;
+    --muted-foreground: 35 23% 70%;
+
+    --accent: 15 10% 20%;
+    --accent-foreground: 35 23% 90%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 15 10% 25%;
+    --input: 15 10% 25%;
+    --ring: 33 44% 57%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sarabun antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar personalizada */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-seda/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-nude/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-nude/70;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-dourado/20 text-cafe;
+  }
+
+  /* Focus ring */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-dourado ring-offset-2 ring-offset-background;
+  }
+
+  /* Headings com fonte Butler */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-butler text-cafe;
+  }
+
+  /* Links */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Inputs - estilo Felice */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    @apply font-sarabun;
+  }
+}
+
+@layer components {
+  /* Botão primário Felice */
+  .btn-felice {
+    @apply bg-dourado text-white font-sarabun font-medium px-6 py-3 rounded-lg
+           transition-all duration-200 ease-out
+           hover:bg-dourado-600 hover:shadow-felice
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-dourado;
+  }
+
+  /* Botão secundário Felice */
+  .btn-felice-secondary {
+    @apply bg-vinho text-white font-sarabun font-medium px-6 py-3 rounded-lg
+           transition-all duration-200 ease-out
+           hover:bg-vinho-700 hover:shadow-felice
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Botão outline Felice */
+  .btn-felice-outline {
+    @apply border-2 border-dourado text-dourado font-sarabun font-medium px-6 py-3 rounded-lg
+           transition-all duration-200 ease-out
+           hover:bg-dourado hover:text-white
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Card Felice */
+  .card-felice {
+    @apply bg-white rounded-xl border border-nude/30 shadow-felice
+           transition-shadow duration-200
+           hover:shadow-felice-lg;
+  }
+
+  /* Input Felice */
+  .input-felice {
+    @apply w-full px-4 py-3 rounded-lg border border-nude/50 bg-white
+           font-sarabun text-cafe placeholder:text-nude
+           transition-all duration-200
+           focus:border-dourado focus:ring-2 focus:ring-dourado/20 focus:outline-none
+           disabled:bg-seda/50 disabled:cursor-not-allowed;
+  }
+
+  /* Label Felice */
+  .label-felice {
+    @apply block text-sm font-medium text-cafe mb-1.5 font-sarabun;
+  }
+
+  /* Título de página */
+  .page-title {
+    @apply font-butler text-3xl md:text-4xl text-cafe;
+  }
+
+  /* Subtítulo de página */
+  .page-subtitle {
+    @apply font-sarabun text-lg text-cafe/70;
+  }
+
+  /* Container de página */
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Status badges */
+  .badge-aguardando {
+    @apply bg-warning/10 text-warning-700 border border-warning/20;
+  }
+
+  .badge-1-mensagem {
+    @apply bg-info/10 text-info-700 border border-info/20;
+  }
+
+  .badge-2-mensagens {
+    @apply bg-vinho/10 text-vinho border border-vinho/20;
+  }
+
+  .badge-3-mais {
+    @apply bg-dourado/10 text-dourado-700 border border-dourado/20;
+  }
+
+  .badge-convertido {
+    @apply bg-success/10 text-success-700 border border-success/20;
+  }
 }
 
 @layer utilities {
+  /* Text balance para títulos */
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Gradient de texto */
+  .text-gradient-felice {
+    @apply bg-gradient-felice bg-clip-text text-transparent;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md;
+  }
+
+  /* Hide scrollbar mas mantém funcionalidade */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animação de pulse suave */
+  .pulse-soft {
+    animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Safe area para mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
   }
 }
