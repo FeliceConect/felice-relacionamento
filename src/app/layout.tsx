@@ -5,17 +5,17 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Felice Endomarketing',
-    template: '%s | Felice Endomarketing',
+    default: 'Felice Relacionamento',
+    template: '%s | Felice Relacionamento',
   },
   description:
-    'Sistema de captação de leads e endomarketing do Complexo Felice. Preencha o formulário de interesses e conheça nossos profissionais.',
-  applicationName: 'Felice Endomarketing',
+    'Sistema de relacionamento e captação de leads do Complexo Felice. Preencha o formulário de interesses e conheça nossos profissionais.',
+  applicationName: 'Felice Relacionamento',
   authors: [{ name: 'Complexo Felice' }],
   generator: 'Next.js',
   keywords: [
     'Complexo Felice',
-    'endomarketing',
+    'relacionamento',
     'cirurgia plástica',
     'dermatologia',
     'estética',
@@ -39,10 +39,10 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'pt_BR',
     url: '/',
-    siteName: 'Felice Endomarketing',
-    title: 'Felice Endomarketing',
+    siteName: 'Felice Relacionamento',
+    title: 'Felice Relacionamento',
     description:
-      'Sistema de captação de leads e endomarketing do Complexo Felice.',
+      'Sistema de relacionamento e captação de leads do Complexo Felice.',
     images: [
       {
         url: '/images/og-image.jpg',
@@ -54,9 +54,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Felice Endomarketing',
+    title: 'Felice Relacionamento',
     description:
-      'Sistema de captação de leads e endomarketing do Complexo Felice.',
+      'Sistema de relacionamento e captação de leads do Complexo Felice.',
     images: ['/images/og-image.jpg'],
   },
   robots: {
