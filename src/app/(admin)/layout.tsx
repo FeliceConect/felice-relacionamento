@@ -113,7 +113,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             id: user.id,
             email: user.email || '',
             nome: equipeData.nome || user.email?.split('@')[0] || 'Usuário',
-            role: equipeData.role || 'atendente',
+            role: (equipeData.role as 'admin' | 'atendente') || 'atendente',
           })
         } else {
           // User doesn't have equipe record - create one with admin role if it's the first user
