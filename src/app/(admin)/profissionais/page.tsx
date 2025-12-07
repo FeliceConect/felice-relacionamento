@@ -81,18 +81,27 @@ export default function ProfissionaisPage() {
         .order('ordem')
 
       // Convert old format (string[]) to new format ({nome, descricao}[]) if needed
-      const profsConverted = (profsData || []).map((prof) => {
+      const profsConverted: ProfissionalComNucleo[] = (profsData || []).map((prof) => {
+        let procedimentosConverted: Procedimento[] | null = null
+
         if (prof.procedimentos && Array.isArray(prof.procedimentos)) {
-          // Check if it's already in new format
+          // Check if it's already in new format or old format
           if (prof.procedimentos.length > 0 && typeof prof.procedimentos[0] === 'string') {
-            // Old format - convert
-            prof.procedimentos = prof.procedimentos.map((p: string) => ({
+            // Old format (string[]) - convert to new format
+            procedimentosConverted = (prof.procedimentos as unknown as string[]).map((p) => ({
               nome: p,
               descricao: '',
             }))
+          } else {
+            // Already in new format
+            procedimentosConverted = prof.procedimentos as unknown as Procedimento[]
           }
         }
-        return prof
+
+        return {
+          ...prof,
+          procedimentos: procedimentosConverted,
+        } as ProfissionalComNucleo
       })
 
       setProfissionais(profsConverted)
@@ -202,7 +211,8 @@ export default function ProfissionaisPage() {
     const procedimentosValidos = procedimentos.filter((p) => p.nome.trim())
 
     try {
-      const data = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data: any = {
         nome,
         especialidade: especialidade || null,
         crm: crm || null,

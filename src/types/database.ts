@@ -57,7 +57,7 @@ export type Database = {
           descricao: string | null
           foto_url: string | null
           nucleo_id: string | null
-          procedimentos: string[] | null
+          procedimentos: Json | null
           instagram: string | null
           ativo: boolean
           ordem: number
@@ -72,7 +72,7 @@ export type Database = {
           descricao?: string | null
           foto_url?: string | null
           nucleo_id?: string | null
-          procedimentos?: string[] | null
+          procedimentos?: Json | null
           instagram?: string | null
           ativo?: boolean
           ordem?: number
@@ -87,7 +87,7 @@ export type Database = {
           descricao?: string | null
           foto_url?: string | null
           nucleo_id?: string | null
-          procedimentos?: string[] | null
+          procedimentos?: Json | null
           instagram?: string | null
           ativo?: boolean
           ordem?: number
