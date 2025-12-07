@@ -528,7 +528,7 @@ export default function ProfissionaisPage() {
               </div>
 
               {procedimentos.length === 0 ? (
-                <p className="text-sm text-cafe/50 italic">Nenhum procedimento cadastrado. Clique em "Adicionar" para incluir.</p>
+                <p className="text-sm text-cafe/50 italic">Nenhum procedimento cadastrado. Clique em &quot;Adicionar&quot; para incluir.</p>
               ) : (
                 <div className="space-y-3">
                   {procedimentos.map((proc, index) => (
