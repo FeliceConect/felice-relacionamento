@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ImageUpload } from '@/components/shared/ImageUpload'
 import { Loader2, Plus, X } from 'lucide-react'
 import type { Nucleo, PerguntaComOpcoes } from '@/types/database'
 
@@ -36,6 +37,7 @@ export interface PerguntaFormData {
   subtitulo: string
   nucleo_id: string
   tipo: string
+  imagem_url: string | null
   multipla_selecao: boolean
   obrigatoria: boolean
   opcoes: OpcaoForm[]
@@ -56,6 +58,7 @@ const initialFormData: PerguntaFormData = {
   subtitulo: '',
   nucleo_id: '',
   tipo: 'multipla_escolha',
+  imagem_url: null,
   multipla_selecao: false,
   obrigatoria: true,
   opcoes: [
@@ -81,6 +84,7 @@ export function PerguntaForm({
         subtitulo: pergunta.subtitulo || '',
         nucleo_id: pergunta.nucleo_id || '',
         tipo: pergunta.tipo,
+        imagem_url: pergunta.imagem_url || null,
         multipla_selecao: pergunta.multipla_selecao,
         obrigatoria: pergunta.obrigatoria,
         opcoes: pergunta.opcoes.map((o, i) => ({
@@ -158,6 +162,22 @@ export function PerguntaForm({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
+          {/* Imagem ilustrativa */}
+          <div>
+            <Label className="label-felice">Imagem ilustrativa (opcional)</Label>
+            <p className="text-sm text-cafe/60 mb-3">
+              Adicione uma imagem para tornar a pergunta mais visual e atrativa
+            </p>
+            <ImageUpload
+              value={formData.imagem_url}
+              onChange={(url) =>
+                setFormData((prev) => ({ ...prev, imagem_url: url }))
+              }
+              aspect="video"
+              folder="perguntas"
+            />
+          </div>
+
           {/* Título */}
           <div>
             <Label className="label-felice">Título da Pergunta *</Label>

@@ -60,16 +60,24 @@ export function FormularioQuestion({
           transition={{ duration: 0.3 }}
           className="w-full max-w-2xl"
         >
-          {/* Imagem opcional */}
+          {/* Imagem opcional - Layout melhorado */}
           {pergunta.imagem_url && (
-            <div className="mb-6 rounded-xl overflow-hidden relative h-48">
-              <Image
-                src={pergunta.imagem_url}
-                alt=""
-                fill
-                className="object-cover"
-                unoptimized
-              />
+            <div className="mb-8 relative">
+              {/* Container com proporção 16:9 e cantos arredondados elegantes */}
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src={pergunta.imagem_url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 672px"
+                />
+                {/* Overlay gradiente sutil na parte inferior */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              </div>
+              {/* Borda decorativa dourada sutil */}
+              <div className="absolute -inset-1 rounded-2xl border border-dourado/20 -z-10" />
             </div>
           )}
 

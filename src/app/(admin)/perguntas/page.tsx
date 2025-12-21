@@ -140,6 +140,7 @@ export default function PerguntasPage() {
             subtitulo: data.subtitulo || null,
             nucleo_id: data.nucleo_id || null,
             tipo: data.tipo,
+            imagem_url: data.imagem_url || null,
             multipla_selecao: data.multipla_selecao,
             obrigatoria: data.obrigatoria,
           })
@@ -188,6 +189,7 @@ export default function PerguntasPage() {
             subtitulo: data.subtitulo || null,
             nucleo_id: data.nucleo_id || null,
             tipo: data.tipo,
+            imagem_url: data.imagem_url || null,
             multipla_selecao: data.multipla_selecao,
             obrigatoria: data.obrigatoria,
             ordem: maxOrdem,
