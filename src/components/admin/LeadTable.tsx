@@ -40,6 +40,7 @@ interface LeadTableProps {
   onSendMessage: (lead: LeadComInteresses) => void
   onMarkConverted: (lead: LeadComInteresses) => void
   onDelete: (lead: LeadComInteresses) => void
+  userRole?: string
 }
 
 export function LeadTable({
@@ -47,6 +48,7 @@ export function LeadTable({
   onSendMessage,
   onMarkConverted,
   onDelete,
+  userRole = 'atendente',
 }: LeadTableProps) {
   const getStatusBadge = (status: string | null) => {
     switch (status) {
@@ -198,14 +200,18 @@ export function LeadTable({
                           Marcar como convertido
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => onDelete(lead)}
-                        className="text-error focus:text-error"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Excluir
-                      </DropdownMenuItem>
+                      {userRole === 'admin' && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => onDelete(lead)}
+                            className="text-error focus:text-error"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

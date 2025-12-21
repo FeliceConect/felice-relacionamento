@@ -31,6 +31,7 @@ export default function LeadsPage() {
   const [templates, setTemplates] = useState<(Template & { nucleo: Nucleo | null })[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filters, setFilters] = useState<LeadFiltersState>(initialFilters)
+  const [userRole, setUserRole] = useState<string>('atendente')
 
   // Dialogs state
   const [messageDialogOpen, setMessageDialogOpen] = useState(false)
@@ -42,6 +43,24 @@ export default function LeadsPage() {
   useEffect(() => {
     async function loadData() {
       const supabase = createClient()
+
+      // Get user role
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: equipeData } = await supabase
+            .from('form_equipe')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+          if (equipeData?.role) {
+            setUserRole(equipeData.role)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user role:', error)
+      }
 
       try {
         // Carregar leads com interesses
@@ -229,22 +248,60 @@ export default function LeadsPage() {
   const handleDeleteConfirm = async () => {
     if (!selectedLead?.id) return
 
+    // Verificar se é admin
+    if (userRole !== 'admin') {
+      toast({
+        variant: 'destructive',
+        title: 'Acesso negado',
+        description: 'Apenas administradores podem excluir leads.',
+      })
+      setDeleteDialogOpen(false)
+      return
+    }
+
     const supabase = createClient()
+    const leadId = selectedLead.id
 
     try {
+      // Deletar em ordem para respeitar foreign keys
+      // 1. Deletar follow-ups
+      await supabase
+        .from('form_followups')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      // 2. Deletar conversões
+      await supabase
+        .from('form_conversoes')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      // 3. Deletar respostas
+      await supabase
+        .from('form_respostas')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      // 4. Deletar interesses
+      await supabase
+        .from('form_interesses')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      // 5. Finalmente, deletar o paciente
       const { error } = await supabase
         .from('form_pacientes')
         .delete()
-        .eq('id', selectedLead.id)
+        .eq('id', leadId)
 
       if (error) throw error
 
       toast({
         title: 'Lead excluído',
-        description: 'O lead foi excluído com sucesso.',
+        description: 'O lead e todos os dados relacionados foram excluídos com sucesso.',
       })
 
-      setLeads((prev) => prev.filter((l) => l.id !== selectedLead.id))
+      setLeads((prev) => prev.filter((l) => l.id !== leadId))
       setDeleteDialogOpen(false)
     } catch (error) {
       console.error('Erro ao excluir lead:', error)
@@ -329,6 +386,7 @@ export default function LeadsPage() {
         onSendMessage={handleSendMessage}
         onMarkConverted={handleMarkConverted}
         onDelete={handleDelete}
+        userRole={userRole}
       />
 
       {/* Dialogs */}

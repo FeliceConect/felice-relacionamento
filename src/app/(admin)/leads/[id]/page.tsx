@@ -214,25 +214,67 @@ export default function LeadDetailPage() {
     const supabase = createClient()
 
     try {
-      const { error } = await supabase
+      // Deletar em ordem para respeitar foreign keys
+      // 1. Deletar follow-ups
+      const { error: followupsError } = await supabase
+        .from('form_followups')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      if (followupsError) {
+        console.error('Erro ao deletar followups:', followupsError)
+      }
+
+      // 2. Deletar conversões
+      const { error: conversoesError } = await supabase
+        .from('form_conversoes')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      if (conversoesError) {
+        console.error('Erro ao deletar conversoes:', conversoesError)
+      }
+
+      // 3. Deletar respostas
+      const { error: respostasError } = await supabase
+        .from('form_respostas')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      if (respostasError) {
+        console.error('Erro ao deletar respostas:', respostasError)
+      }
+
+      // 4. Deletar interesses
+      const { error: interessesError } = await supabase
+        .from('form_interesses')
+        .delete()
+        .eq('paciente_id', leadId)
+
+      if (interessesError) {
+        console.error('Erro ao deletar interesses:', interessesError)
+      }
+
+      // 5. Finalmente, deletar o paciente
+      const { error: pacienteError } = await supabase
         .from('form_pacientes')
         .delete()
         .eq('id', leadId)
 
-      if (error) throw error
+      if (pacienteError) throw pacienteError
 
       toast({
         title: 'Lead excluído',
-        description: 'O lead foi excluído com sucesso.',
+        description: 'O lead e todos os dados relacionados foram excluídos com sucesso.',
       })
 
       router.push('/leads')
     } catch (error) {
-      console.error('Erro:', error)
+      console.error('Erro ao excluir lead:', error)
       toast({
         variant: 'destructive',
         title: 'Erro',
-        description: 'Não foi possível excluir o lead.',
+        description: 'Não foi possível excluir o lead. Verifique se há dados relacionados.',
       })
     }
   }
