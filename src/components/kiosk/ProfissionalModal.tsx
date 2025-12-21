@@ -40,18 +40,18 @@ export function ProfissionalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl h-[85vh] max-h-[700px] p-0 overflow-hidden bg-white">
-        {/* Close button */}
+      <DialogContent className="max-w-3xl max-h-[90vh] !p-0 overflow-hidden bg-white [&>button]:hidden">
+        {/* Close button customizado */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-seda/80 backdrop-blur-sm flex items-center justify-center text-cafe hover:bg-seda transition-colors"
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-seda/80 backdrop-blur-sm flex items-center justify-center text-cafe hover:bg-seda transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex flex-col md:flex-row h-full">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh]">
           {/* Foto - Lado esquerdo - FIXA */}
-          <div className="relative w-full md:w-2/5 h-48 md:h-full bg-seda flex-shrink-0">
+          <div className="relative w-full md:w-2/5 h-48 md:h-auto md:min-h-[500px] bg-seda flex-shrink-0">
             {profissional.foto_url ? (
               <Image
                 src={profissional.foto_url}
@@ -72,8 +72,8 @@ export function ProfissionalModal({
           </div>
 
           {/* Content - Lado direito - COM SCROLL */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6 md:p-8">
+          <div className="flex-1 overflow-y-auto md:max-h-[90vh] overscroll-contain">
+            <div className="p-6 md:p-8 pb-10">
               {/* Núcleo badge */}
               {profissional.nucleo && (
                 <Badge
