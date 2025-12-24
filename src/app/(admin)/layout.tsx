@@ -49,7 +49,7 @@ const allNavigation = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
-    roles: ['admin'], // Only admin
+    roles: ['admin', 'atendente'], // Both
   },
   {
     name: 'Leads',
@@ -213,8 +213,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
         </ScrollArea>
 
-        {/* Kiosk Mode Button - Only for admin */}
-        {userInfo?.role === 'admin' && (
+        {/* Kiosk Mode Button - Admin and Atendente */}
+        {(userInfo?.role === 'admin' || userInfo?.role === 'atendente') && (
           <div className="border-t border-nude/30 p-4">
             <Link href="/formulario">
               <Button
@@ -274,7 +274,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   })}
                 </nav>
               </ScrollArea>
-              {userInfo?.role === 'admin' && (
+              {(userInfo?.role === 'admin' || userInfo?.role === 'atendente') && (
                 <div className="border-t border-nude/30 p-4">
                   <Link href="/formulario" onClick={() => setSidebarOpen(false)}>
                     <Button
