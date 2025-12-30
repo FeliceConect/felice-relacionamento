@@ -116,6 +116,7 @@ export type Database = {
           obrigatoria: boolean
           ativo: boolean
           ordem: number
+          max_indicacoes: number | null
           created_at: string
           updated_at: string
         }
@@ -130,6 +131,7 @@ export type Database = {
           obrigatoria?: boolean
           ativo?: boolean
           ordem?: number
+          max_indicacoes?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -144,6 +146,7 @@ export type Database = {
           obrigatoria?: boolean
           ativo?: boolean
           ordem?: number
+          max_indicacoes?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -555,6 +558,159 @@ export type Database = {
         }
         Relationships: []
       }
+      form_indicacoes: {
+        Row: {
+          id: string
+          nome: string
+          telefone: string
+          telefone_formatado: string | null
+          parentesco: string | null
+          paciente_id: string
+          pergunta_id: string | null
+          status: string
+          convertido: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          nome: string
+          telefone: string
+          telefone_formatado?: string | null
+          parentesco?: string | null
+          paciente_id: string
+          pergunta_id?: string | null
+          status?: string
+          convertido?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          nome?: string
+          telefone?: string
+          telefone_formatado?: string | null
+          parentesco?: string | null
+          paciente_id?: string
+          pergunta_id?: string | null
+          status?: string
+          convertido?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'form_indicacoes_paciente_id_fkey'
+            columns: ['paciente_id']
+            isOneToOne: false
+            referencedRelation: 'form_pacientes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'form_indicacoes_pergunta_id_fkey'
+            columns: ['pergunta_id']
+            isOneToOne: false
+            referencedRelation: 'form_perguntas'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      form_indicacoes_followups: {
+        Row: {
+          id: string
+          indicacao_id: string
+          template_id: string | null
+          tipo_contato: string
+          conteudo_enviado: string | null
+          data_envio: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          indicacao_id: string
+          template_id?: string | null
+          tipo_contato?: string
+          conteudo_enviado?: string | null
+          data_envio?: string
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          indicacao_id?: string
+          template_id?: string | null
+          tipo_contato?: string
+          conteudo_enviado?: string | null
+          data_envio?: string
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'form_indicacoes_followups_indicacao_id_fkey'
+            columns: ['indicacao_id']
+            isOneToOne: false
+            referencedRelation: 'form_indicacoes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'form_indicacoes_followups_template_id_fkey'
+            columns: ['template_id']
+            isOneToOne: false
+            referencedRelation: 'form_templates'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      form_indicacoes_conversoes: {
+        Row: {
+          id: string
+          indicacao_id: string
+          nucleo_id: string | null
+          procedimento: string | null
+          valor: number | null
+          data_conversao: string
+          observacoes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          indicacao_id: string
+          nucleo_id?: string | null
+          procedimento?: string | null
+          valor?: number | null
+          data_conversao?: string
+          observacoes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          indicacao_id?: string
+          nucleo_id?: string | null
+          procedimento?: string | null
+          valor?: number | null
+          data_conversao?: string
+          observacoes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'form_indicacoes_conversoes_indicacao_id_fkey'
+            columns: ['indicacao_id']
+            isOneToOne: false
+            referencedRelation: 'form_indicacoes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'form_indicacoes_conversoes_nucleo_id_fkey'
+            columns: ['nucleo_id']
+            isOneToOne: false
+            referencedRelation: 'form_nucleos'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: {
       form_leads_view: {
@@ -580,6 +736,27 @@ export type Database = {
           total_followups: number | null
           total_conversoes: number | null
           taxa_conversao: number | null
+        }
+        Relationships: []
+      }
+      form_indicacoes_view: {
+        Row: {
+          id: string | null
+          nome: string | null
+          telefone: string | null
+          telefone_formatado: string | null
+          parentesco: string | null
+          paciente_id: string | null
+          pergunta_id: string | null
+          created_at: string | null
+          updated_at: string | null
+          indicado_por_nome: string | null
+          indicado_por_whatsapp: string | null
+          total_followups: number | null
+          status: string | null
+          convertido: boolean | null
+          nucleo_convertido_id: string | null
+          data_conversao: string | null
         }
         Relationships: []
       }
@@ -628,6 +805,7 @@ export type Configuracao = Tables<'form_configuracoes'>
 // View types
 export type LeadView = Views<'form_leads_view'>
 export type DashboardView = Views<'form_dashboard_view'>
+export type IndicacaoView = Views<'form_indicacoes_view'>
 
 // Pergunta with options
 export type PerguntaComOpcoes = Pergunta & {
@@ -655,7 +833,19 @@ export type UserRole = 'admin' | 'gerente' | 'atendente'
 export type LeadStatus = 'aguardando' | '1_mensagem' | '2_mensagens' | '3_mais_mensagens'
 
 // Pergunta tipos
-export type PerguntaTipo = 'multipla_escolha' | 'texto' | 'telefone'
+export type PerguntaTipo = 'multipla_escolha' | 'texto' | 'telefone' | 'indicacoes'
 
 // Template tipos
 export type TemplateTipo = 'texto' | 'imagem' | 'video'
+
+// Indicação types
+export type Indicacao = Tables<'form_indicacoes'>
+export type IndicacaoFollowup = Tables<'form_indicacoes_followups'>
+export type IndicacaoConversao = Tables<'form_indicacoes_conversoes'>
+
+// Indicação with details
+export type IndicacaoComDetalhes = Indicacao & {
+  paciente: Paciente
+  followups: (IndicacaoFollowup & { template: Template | null })[]
+  conversoes: (IndicacaoConversao & { nucleo: Nucleo | null })[]
+}

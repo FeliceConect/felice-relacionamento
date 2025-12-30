@@ -21,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   LayoutDashboard,
   Users,
+  UserPlus,
   FileText,
   MessageSquare,
   UserCircle,
@@ -55,6 +56,12 @@ const allNavigation = [
     name: 'Leads',
     href: '/leads',
     icon: Users,
+    roles: ['admin', 'atendente'], // Both
+  },
+  {
+    name: 'Indicacoes',
+    href: '/indicacoes',
+    icon: UserPlus,
     roles: ['admin', 'atendente'], // Both
   },
   {

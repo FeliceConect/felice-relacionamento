@@ -6,3 +6,10 @@ export { SendMessageDialog } from './SendMessageDialog'
 export { MarkConvertedDialog } from './MarkConvertedDialog'
 export { PerguntaForm } from './PerguntaForm'
 export type { PerguntaFormData, OpcaoForm } from './PerguntaForm'
+
+// Indicacoes
+export { IndicacaoTable } from './IndicacaoTable'
+export { IndicacaoFilters } from './IndicacaoFilters'
+export type { IndicacaoFiltersState } from './IndicacaoFilters'
+export { SendIndicacaoMessageDialog } from './SendIndicacaoMessageDialog'
+export { MarkIndicacaoConvertedDialog } from './MarkIndicacaoConvertedDialog'
