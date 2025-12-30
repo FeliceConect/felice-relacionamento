@@ -76,7 +76,37 @@ export const PERGUNTA_TIPOS = {
   MULTIPLA_ESCOLHA: 'multipla_escolha',
   TEXTO: 'texto',
   TELEFONE: 'telefone',
+  INDICACOES: 'indicacoes',
 } as const
+
+// Opções de grau de parentesco para indicações
+export const GRAUS_PARENTESCO = [
+  'Mãe',
+  'Pai',
+  'Esposa',
+  'Esposo',
+  'Filha',
+  'Filho',
+  'Irmã',
+  'Irmão',
+  'Sogra',
+  'Sogro',
+  'Cunhada',
+  'Cunhado',
+  'Amiga',
+  'Amigo',
+  'Colega de trabalho',
+  'Outro',
+] as const
+
+export type GrauParentescoType = typeof GRAUS_PARENTESCO[number]
+
+// Interface para indicação
+export interface Indicacao {
+  nome: string
+  telefone: string
+  parentesco: string
+}
 
 export type PerguntaTipoType = typeof PERGUNTA_TIPOS[keyof typeof PERGUNTA_TIPOS]
 

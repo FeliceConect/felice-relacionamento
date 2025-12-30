@@ -19,6 +19,7 @@ import {
   GripVertical,
   List,
   Type,
+  Users,
 } from 'lucide-react'
 import type { Nucleo, PerguntaComOpcoes } from '@/types/database'
 
@@ -143,6 +144,7 @@ export default function PerguntasPage() {
             imagem_url: data.imagem_url || null,
             multipla_selecao: data.multipla_selecao,
             obrigatoria: data.obrigatoria,
+            max_indicacoes: data.tipo === 'indicacoes' ? data.max_indicacoes : null,
           })
           .eq('id', selectedPergunta.id)
 
@@ -193,6 +195,7 @@ export default function PerguntasPage() {
             multipla_selecao: data.multipla_selecao,
             obrigatoria: data.obrigatoria,
             ordem: maxOrdem,
+            max_indicacoes: data.tipo === 'indicacoes' ? data.max_indicacoes : null,
           })
           .select()
           .single()
@@ -355,7 +358,12 @@ export default function PerguntasPage() {
                             {pergunta.tipo === 'multipla_escolha' ? (
                               <>
                                 <List className="mr-1 h-3 w-3" />
-                                {pergunta.opcoes.length} opções
+                                {pergunta.opcoes.length} opcoes
+                              </>
+                            ) : pergunta.tipo === 'indicacoes' ? (
+                              <>
+                                <Users className="mr-1 h-3 w-3" />
+                                {pergunta.max_indicacoes || 5} campos iniciais
                               </>
                             ) : (
                               <>

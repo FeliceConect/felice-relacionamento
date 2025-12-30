@@ -41,6 +41,7 @@ export interface PerguntaFormData {
   multipla_selecao: boolean
   obrigatoria: boolean
   opcoes: OpcaoForm[]
+  max_indicacoes: number
 }
 
 interface PerguntaFormProps {
@@ -65,6 +66,7 @@ const initialFormData: PerguntaFormData = {
     { texto: '', letra: 'A', ordem: 0 },
     { texto: '', letra: 'B', ordem: 1 },
   ],
+  max_indicacoes: 5,
 }
 
 export function PerguntaForm({
@@ -93,6 +95,7 @@ export function PerguntaForm({
           letra: o.letra || letras[i],
           ordem: o.ordem,
         })),
+        max_indicacoes: pergunta.max_indicacoes || 5,
       })
     } else {
       setFormData(initialFormData)
@@ -242,8 +245,9 @@ export function PerguntaForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="multipla_escolha">Múltipla Escolha</SelectItem>
+                  <SelectItem value="multipla_escolha">Multipla Escolha</SelectItem>
                   <SelectItem value="texto">Texto Livre</SelectItem>
+                  <SelectItem value="indicacoes">Indicacoes (Nome + Telefone + Parentesco)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -251,18 +255,20 @@ export function PerguntaForm({
 
           {/* Switches */}
           <div className="flex flex-wrap gap-6">
-            <div className="flex items-center gap-3">
-              <Switch
-                id="multipla_selecao"
-                checked={formData.multipla_selecao}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, multipla_selecao: checked }))
-                }
-              />
-              <Label htmlFor="multipla_selecao" className="cursor-pointer">
-                Permitir múltipla seleção
-              </Label>
-            </div>
+            {formData.tipo === 'multipla_escolha' && (
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="multipla_selecao"
+                  checked={formData.multipla_selecao}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, multipla_selecao: checked }))
+                  }
+                />
+                <Label htmlFor="multipla_selecao" className="cursor-pointer">
+                  Permitir multipla selecao
+                </Label>
+              </div>
+            )}
 
             <div className="flex items-center gap-3">
               <Switch
@@ -273,10 +279,37 @@ export function PerguntaForm({
                 }
               />
               <Label htmlFor="obrigatoria" className="cursor-pointer">
-                Resposta obrigatória
+                Resposta obrigatoria
               </Label>
             </div>
           </div>
+
+          {/* Configuração de indicações */}
+          {formData.tipo === 'indicacoes' && (
+            <div>
+              <Label className="label-felice">Quantidade inicial de campos</Label>
+              <p className="text-sm text-cafe/60 mb-2">
+                Quantos campos aparecerao inicialmente (o cliente pode adicionar mais)
+              </p>
+              <Select
+                value={formData.max_indicacoes.toString()}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, max_indicacoes: parseInt(value) }))
+                }
+              >
+                <SelectTrigger className="input-felice w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                    <SelectItem key={n} value={n.toString()}>
+                      {n} {n === 1 ? 'campo' : 'campos'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Opções (apenas para múltipla escolha) */}
           {formData.tipo === 'multipla_escolha' && (
