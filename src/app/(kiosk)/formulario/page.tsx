@@ -19,12 +19,16 @@ export default function FormularioPage() {
     nextQuestion,
     prevQuestion,
     selectOption,
+    updateIndicacoes,
+    updateTextoLivre,
     setNome,
     setWhatsapp,
     submitForm,
     resetForm,
     progress,
     currentPergunta,
+    currentIndicacoes,
+    currentTextoLivre,
     canGoNext,
     canSubmit,
   } = useFormulario()
@@ -75,12 +79,20 @@ export default function FormularioPage() {
           <FormularioQuestion
             pergunta={currentPergunta}
             selectedOptions={state.answers[currentPergunta.id] || []}
+            indicacoes={currentIndicacoes}
+            textoLivre={currentTextoLivre}
             progress={progress}
             currentIndex={state.currentQuestion}
             totalQuestions={perguntas.length}
             canGoNext={canGoNext}
             onSelectOption={(opcaoId) =>
               selectOption(currentPergunta.id, opcaoId, currentPergunta.multipla_selecao)
+            }
+            onUpdateIndicacoes={(indicacoes) =>
+              updateIndicacoes(currentPergunta.id, indicacoes)
+            }
+            onUpdateTextoLivre={(texto) =>
+              updateTextoLivre(currentPergunta.id, texto)
             }
             onNext={nextQuestion}
             onPrev={prevQuestion}
