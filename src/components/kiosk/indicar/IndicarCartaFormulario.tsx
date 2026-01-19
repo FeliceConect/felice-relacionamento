@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { GRAUS_PARENTESCO, type Indicacao } from '@/lib/utils/constants'
 
@@ -58,8 +57,9 @@ export function IndicarCartaFormulario({
   }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col">
-      <ScrollArea className="flex-1">
+    <>
+      {/* Conteúdo com scroll - área entre header e footer */}
+      <div className="overflow-y-auto pb-28" style={{ height: 'calc(100vh - 80px)' }}>
         <div className="px-4 md:px-6 py-6 max-w-2xl mx-auto">
           {/* Carta Emocional */}
           <motion.div
@@ -253,14 +253,14 @@ export function IndicarCartaFormulario({
             </motion.button>
           </motion.div>
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Footer Fixo */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.1 }}
-        className="border-t border-nude/30 bg-white p-4"
+        className="fixed bottom-0 left-0 right-0 border-t border-nude/30 bg-white p-4 shadow-lg z-40"
       >
         <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
           <Button
@@ -291,6 +291,6 @@ export function IndicarCartaFormulario({
           </Button>
         </div>
       </motion.div>
-    </div>
+    </>
   )
 }
