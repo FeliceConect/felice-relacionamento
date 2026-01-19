@@ -6,3 +6,11 @@ export { FormularioContact } from './FormularioContact'
 export { FormularioSuccess } from './FormularioSuccess'
 export { ProfissionalCard } from './ProfissionalCard'
 export { ProfissionalModal } from './ProfissionalModal'
+
+// Indicar components
+export {
+  IndicarBuscaPaciente,
+  IndicarCartaEmocional,
+  IndicarFormulario,
+  IndicarAgradecimento,
+} from './indicar'

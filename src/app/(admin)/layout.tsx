@@ -30,6 +30,7 @@ import {
   LogOut,
   ChevronDown,
   Monitor,
+  Heart,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -220,9 +221,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
         </ScrollArea>
 
-        {/* Kiosk Mode Button - Admin and Atendente */}
+        {/* Action Buttons - Admin and Atendente */}
         {(userInfo?.role === 'admin' || userInfo?.role === 'atendente') && (
-          <div className="border-t border-nude/30 p-4">
+          <div className="border-t border-nude/30 p-4 space-y-2">
+            <Link href="/indicar">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 border-dourado/30 text-dourado hover:bg-dourado hover:text-white"
+              >
+                <Heart className="h-4 w-4" />
+                Pedir Indicações
+              </Button>
+            </Link>
             <Link href="/formulario">
               <Button
                 variant="outline"
@@ -282,7 +292,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </nav>
               </ScrollArea>
               {(userInfo?.role === 'admin' || userInfo?.role === 'atendente') && (
-                <div className="border-t border-nude/30 p-4">
+                <div className="border-t border-nude/30 p-4 space-y-2">
+                  <Link href="/indicar" onClick={() => setSidebarOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2 border-dourado/30 text-dourado hover:bg-dourado hover:text-white"
+                    >
+                      <Heart className="h-4 w-4" />
+                      Pedir Indicações
+                    </Button>
+                  </Link>
                   <Link href="/formulario" onClick={() => setSidebarOpen(false)}>
                     <Button
                       variant="outline"

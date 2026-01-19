@@ -1,0 +1,5 @@
+export { IndicarBuscaPaciente } from './IndicarBuscaPaciente'
+export { IndicarCartaEmocional } from './IndicarCartaEmocional'
+export { IndicarFormulario } from './IndicarFormulario'
+export { IndicarCartaFormulario } from './IndicarCartaFormulario'
+export { IndicarAgradecimento } from './IndicarAgradecimento'
