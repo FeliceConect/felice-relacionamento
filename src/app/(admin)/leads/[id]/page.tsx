@@ -24,8 +24,19 @@ import {
   Clock,
   ExternalLink,
   Trash2,
+  Users,
 } from 'lucide-react'
+import type { Indicacao } from '@/lib/utils/constants'
 import type { LeadComDetalhes, Nucleo, Template } from '@/types/database'
+
+// Helper para formatar telefone
+function formatPhoneDisplay(value: string): string {
+  const cleaned = value.replace(/\D/g, '')
+  if (cleaned.length <= 2) return cleaned
+  if (cleaned.length <= 7) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`
+  if (cleaned.length <= 11) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`
+  return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 11)}`
+}
 
 export default function LeadDetailPage() {
   const params = useParams()
@@ -325,25 +336,14 @@ export default function LeadDetailPage() {
             Lead desde {format(new Date(lead.created_at), "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setMessageDialogOpen(true)}
-            className="border-dourado text-dourado hover:bg-dourado hover:text-white"
-          >
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Enviar Mensagem
-          </Button>
-          {!isConverted && (
-            <Button
-              onClick={() => setConvertDialogOpen(true)}
-              className="bg-success hover:bg-success-600 text-white"
-            >
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Marcar Convertido
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="outline"
+          onClick={() => setMessageDialogOpen(true)}
+          className="border-dourado text-dourado hover:bg-dourado hover:text-white"
+        >
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Enviar Mensagem
+        </Button>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -425,20 +425,66 @@ export default function LeadDetailPage() {
               <CardHeader>
                 <CardTitle className="font-butler text-lg flex items-center gap-2">
                   <FileText className="h-5 w-5 text-dourado" />
-                  Respostas do Formulário
+                  Respostas do Formulario
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {lead.respostas.map((resposta) => (
-                  <div key={resposta.id} className="border-b border-nude/20 pb-4 last:border-0 last:pb-0">
-                    <p className="text-sm font-medium text-cafe">
-                      {resposta.pergunta?.titulo}
-                    </p>
-                    <p className="text-cafe/70 mt-1">
-                      {resposta.opcao?.texto || resposta.resposta_texto || '-'}
-                    </p>
-                  </div>
-                ))}
+                {lead.respostas.map((resposta) => {
+                  // Verificar se e uma resposta de indicacoes
+                  const isIndicacoes = resposta.pergunta?.tipo === 'indicacoes'
+                  let indicacoes: Indicacao[] = []
+
+                  if (isIndicacoes && resposta.resposta_texto) {
+                    try {
+                      indicacoes = JSON.parse(resposta.resposta_texto)
+                    } catch {
+                      // Se nao for JSON valido, exibe como texto normal
+                    }
+                  }
+
+                  return (
+                    <div key={resposta.id} className="border-b border-nude/20 pb-4 last:border-0 last:pb-0">
+                      <p className="text-sm font-medium text-cafe">
+                        {resposta.pergunta?.titulo}
+                      </p>
+
+                      {isIndicacoes && indicacoes.length > 0 ? (
+                        <div className="mt-2 space-y-2">
+                          {indicacoes.map((indicacao, index) => (
+                            <div key={index} className="flex items-start gap-3 p-3 bg-seda/30 rounded-lg">
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dourado/10 flex items-center justify-center">
+                                <Users className="h-4 w-4 text-dourado" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-cafe">{indicacao.nome}</p>
+                                <div className="flex flex-wrap gap-2 mt-1 text-sm text-cafe/70">
+                                  {indicacao.telefone && (
+                                    <a
+                                      href={`https://wa.me/55${indicacao.telefone.replace(/\D/g, '')}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 hover:text-dourado transition-colors"
+                                    >
+                                      <Phone className="h-3 w-3" />
+                                      {formatPhoneDisplay(indicacao.telefone)}
+                                    </a>
+                                  )}
+                                  {indicacao.parentesco && (
+                                    <span className="text-cafe/50">• {indicacao.parentesco}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-cafe/70 mt-1">
+                          {resposta.opcao?.texto || resposta.resposta_texto || '-'}
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
               </CardContent>
             </Card>
           )}
@@ -447,46 +493,60 @@ export default function LeadDetailPage() {
         {/* Sidebar - Timeline */}
         <div className="space-y-6">
           {/* Conversões */}
-          {lead.conversoes && lead.conversoes.length > 0 && (
-            <Card className="card-felice border-success/30 bg-success/5">
-              <CardHeader>
-                <CardTitle className="font-butler text-lg flex items-center gap-2 text-success">
-                  <CheckCircle className="h-5 w-5" />
-                  Conversões
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {lead.conversoes.map((conversao) => (
-                  <div key={conversao.id} className="p-3 bg-white rounded-lg border border-success/20">
-                    <div className="flex items-center justify-between">
-                      <Badge
-                        style={{
-                          backgroundColor: `${conversao.nucleo?.cor}20`,
-                          color: conversao.nucleo?.cor || '#c29863',
-                        }}
-                      >
-                        {conversao.nucleo?.nome}
-                      </Badge>
-                      <span className="text-xs text-cafe/60">
-                        {format(new Date(conversao.data_conversao), 'dd/MM/yyyy')}
-                      </span>
+          <Card className={`card-felice ${isConverted ? 'border-success/30 bg-success/5' : ''}`}>
+            <CardHeader>
+              <CardTitle className={`font-butler text-lg flex items-center gap-2 ${isConverted ? 'text-success' : 'text-cafe'}`}>
+                <CheckCircle className="h-5 w-5" />
+                Conversões
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {lead.conversoes && lead.conversoes.length > 0 ? (
+                <>
+                  {lead.conversoes.map((conversao) => (
+                    <div key={conversao.id} className="p-3 bg-white rounded-lg border border-success/20">
+                      <div className="flex items-center justify-between">
+                        <Badge
+                          style={{
+                            backgroundColor: `${conversao.nucleo?.cor}20`,
+                            color: conversao.nucleo?.cor || '#c29863',
+                          }}
+                        >
+                          {conversao.nucleo?.nome}
+                        </Badge>
+                        <span className="text-xs text-cafe/60">
+                          {format(new Date(conversao.data_conversao), 'dd/MM/yyyy')}
+                        </span>
+                      </div>
+                      {conversao.procedimento && (
+                        <p className="text-sm text-cafe mt-2">{conversao.procedimento}</p>
+                      )}
+                      {conversao.valor && (
+                        <p className="text-sm font-medium text-success mt-1">
+                          {conversao.valor.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </p>
+                      )}
                     </div>
-                    {conversao.procedimento && (
-                      <p className="text-sm text-cafe mt-2">{conversao.procedimento}</p>
-                    )}
-                    {conversao.valor && (
-                      <p className="text-sm font-medium text-success mt-1">
-                        {conversao.valor.toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                  ))}
+                </>
+              ) : (
+                <p className="text-center text-cafe/50 py-2">
+                  Nenhuma conversão registrada
+                </p>
+              )}
+              <Button
+                onClick={() => setConvertDialogOpen(true)}
+                variant={isConverted ? 'outline' : 'default'}
+                className={`w-full ${isConverted ? 'border-success text-success hover:bg-success hover:text-white' : 'bg-success hover:bg-success-600 text-white'}`}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                {isConverted ? 'Adicionar Nova Conversão' : 'Registrar Conversão'}
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Timeline de Follow-ups */}
           <Card className="card-felice">
