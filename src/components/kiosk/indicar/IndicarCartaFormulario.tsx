@@ -87,7 +87,7 @@ export function IndicarCartaFormulario({
               transition={{ delay: 0.3 }}
               className="font-butler text-2xl md:text-3xl text-cafe mb-2"
             >
-              Querida {firstName},
+              Olá, {firstName}!
             </motion.p>
 
             <motion.p

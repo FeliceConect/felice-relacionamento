@@ -72,7 +72,7 @@ export function IndicarAgradecimento({
           transition={{ delay: 0.3, duration: 0.5 }}
           className="font-butler text-3xl md:text-4xl text-cafe mb-4"
         >
-          Obrigada, {firstName}!
+          Parabéns, {firstName}!
         </motion.h2>
 
         {/* Message */}

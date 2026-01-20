@@ -45,7 +45,7 @@ export function IndicarCartaEmocional({
             transition={{ delay: 0.3 }}
             className="font-butler text-3xl md:text-4xl text-cafe"
           >
-            Querida {firstName},
+            Olá, {firstName}!
           </motion.p>
 
           <motion.p
