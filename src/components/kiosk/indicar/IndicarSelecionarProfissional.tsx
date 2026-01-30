@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Stethoscope, ChevronRight, User } from 'lucide-react'
+import { Stethoscope, ChevronRight } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import type { ProfissionalBase } from '@/types/database'
