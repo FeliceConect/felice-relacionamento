@@ -16,6 +16,8 @@ interface IndicarBuscaPacienteProps {
   selectedPaciente: Paciente | null
   onSearchChange: (query: string) => void
   onSelectPaciente: (paciente: Paciente) => void
+  onBack?: () => void
+  profissionalNome?: string
 }
 
 export function IndicarBuscaPaciente({
@@ -25,6 +27,8 @@ export function IndicarBuscaPaciente({
   selectedPaciente,
   onSearchChange,
   onSelectPaciente,
+  onBack,
+  profissionalNome,
 }: IndicarBuscaPacienteProps) {
   const [showCadastro, setShowCadastro] = useState(false)
   const [novoNome, setNovoNome] = useState('')
@@ -102,11 +106,25 @@ export function IndicarBuscaPaciente({
             transition={{ duration: 0.3 }}
             className="w-full max-w-xl"
           >
-            {/* Title */}
+            {/* Back button and Title */}
             <div className="text-center mb-8">
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="mb-4 inline-flex items-center gap-2 text-cafe/60 hover:text-cafe transition-colors font-sarabun"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Trocar profissional
+                </button>
+              )}
               <h1 className="font-butler text-3xl md:text-4xl text-cafe mb-3">
                 Indicações Felice
               </h1>
+              {profissionalNome && (
+                <p className="font-sarabun text-dourado text-base mb-2">
+                  Profissional: {profissionalNome}
+                </p>
+              )}
               <p className="font-sarabun text-cafe/70 text-lg">
                 Busque o paciente pelo nome ou telefone
               </p>

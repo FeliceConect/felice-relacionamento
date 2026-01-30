@@ -29,7 +29,15 @@ import {
   UserPlus,
   User,
 } from 'lucide-react'
-import type { IndicacaoComDetalhes, Nucleo, Template, IndicacaoView } from '@/types/database'
+import type { IndicacaoComDetalhes, Nucleo, Template, IndicacaoView, ProfissionalBase } from '@/types/database'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Stethoscope, Pencil } from 'lucide-react'
 
 // Helper para formatar telefone
 function formatPhoneDisplay(value: string): string {
@@ -49,8 +57,11 @@ export default function IndicacaoDetailPage() {
   const [indicacao, setIndicacao] = useState<IndicacaoComDetalhes | null>(null)
   const [nucleos, setNucleos] = useState<Nucleo[]>([])
   const [templates, setTemplates] = useState<(Template & { nucleo: Nucleo | null })[]>([])
+  const [profissionais, setProfissionais] = useState<ProfissionalBase[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [userRole, setUserRole] = useState<string>('atendente')
+  const [isEditingProfissional, setIsEditingProfissional] = useState(false)
+  const [isSavingProfissional, setIsSavingProfissional] = useState(false)
 
   // Dialogs
   const [messageDialogOpen, setMessageDialogOpen] = useState(false)
@@ -132,6 +143,22 @@ export default function IndicacaoDetailPage() {
           .eq('ativo', true)
 
         setTemplates(templatesData || [])
+
+        // Carregar profissionais
+        const { data: profissionaisData } = await supabase
+          .from('form_profissionais')
+          .select('*')
+          .eq('ativo', true)
+          .order('ordem')
+
+        // Ordenar para colocar Dr Leonardo em primeiro
+        const sortedProfissionais = (profissionaisData || []).sort((a, b) => {
+          if (a.nome.toLowerCase().includes('leonardo')) return -1
+          if (b.nome.toLowerCase().includes('leonardo')) return 1
+          return a.ordem - b.ordem
+        })
+
+        setProfissionais(sortedProfissionais)
       } catch (error) {
         console.error('Erro ao carregar indicacao:', error)
         toast({
@@ -217,6 +244,38 @@ export default function IndicacaoDetailPage() {
     }
   }
 
+  const handleUpdateProfissional = async (profissionalId: string | null) => {
+    const supabase = createClient()
+    setIsSavingProfissional(true)
+
+    try {
+      const { error } = await supabase
+        .from('form_indicacoes')
+        .update({ profissional_id: profissionalId })
+        .eq('id', indicacaoId)
+
+      if (error) throw error
+
+      // Atualizar estado local
+      setIndicacao(prev => prev ? { ...prev, profissional_id: profissionalId } : null)
+      setIsEditingProfissional(false)
+
+      toast({
+        title: 'Profissional atualizado',
+        description: 'O profissional foi vinculado com sucesso.',
+      })
+    } catch (error) {
+      console.error('Erro ao atualizar profissional:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Nao foi possivel atualizar o profissional.',
+      })
+    } finally {
+      setIsSavingProfissional(false)
+    }
+  }
+
   const handleDelete = async () => {
     const supabase = createClient()
 
@@ -275,10 +334,12 @@ export default function IndicacaoDetailPage() {
     parentesco: indicacao.parentesco,
     paciente_id: indicacao.paciente_id,
     pergunta_id: indicacao.pergunta_id,
+    profissional_id: indicacao.profissional_id,
     created_at: indicacao.created_at,
     updated_at: indicacao.updated_at,
     indicado_por_nome: indicacao.paciente?.nome || null,
     indicado_por_whatsapp: indicacao.paciente?.whatsapp || null,
+    profissional_nome: profissionais.find(p => p.id === indicacao.profissional_id)?.nome || null,
     total_followups: indicacao.followups?.length || 0,
     status: indicacao.conversoes?.length > 0 ? 'convertido' :
             indicacao.followups?.length >= 3 ? '3_mais_mensagens' :
@@ -401,6 +462,41 @@ export default function IndicacaoDetailPage() {
                         {indicacao.parentesco}
                       </div>
                     )}
+                    <div className="flex items-center gap-2 text-cafe/60 text-sm">
+                      <Stethoscope className="h-4 w-4" />
+                      {isEditingProfissional ? (
+                        <Select
+                          value={indicacao.profissional_id || 'none'}
+                          onValueChange={(value) => handleUpdateProfissional(value === 'none' ? null : value)}
+                          disabled={isSavingProfissional}
+                        >
+                          <SelectTrigger className="h-7 w-48 text-xs">
+                            <SelectValue placeholder="Selecione..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Nenhum profissional</SelectItem>
+                            {profissionais.map((prof) => (
+                              <SelectItem key={prof.id} value={prof.id}>
+                                {prof.nome}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span>
+                          {profissionais.find(p => p.id === indicacao.profissional_id)?.nome || 'Sem profissional'}
+                        </span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditingProfissional(!isEditingProfissional)}
+                        className="h-6 w-6 p-0 text-cafe/40 hover:text-dourado"
+                        disabled={isSavingProfissional}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </div>
                     <div className="flex items-center gap-2 text-cafe/60 text-sm">
                       <Calendar className="h-4 w-4" />
                       {formatDistanceToNow(new Date(indicacao.created_at), {

@@ -15,12 +15,13 @@ import {
 import type { IndicacaoFiltersState } from '@/components/admin'
 import { useToast } from '@/lib/hooks/use-toast'
 import { Download, UserPlus } from 'lucide-react'
-import type { Nucleo, Template, IndicacaoView } from '@/types/database'
+import type { Nucleo, Template, IndicacaoView, ProfissionalBase } from '@/types/database'
 
 const initialFilters: IndicacaoFiltersState = {
   search: '',
   status: 'all',
   parentesco: 'all',
+  profissional: 'all',
   dateRange: undefined,
 }
 
@@ -29,6 +30,7 @@ export default function IndicacoesPage() {
   const [indicacoes, setIndicacoes] = useState<IndicacaoView[]>([])
   const [nucleos, setNucleos] = useState<Nucleo[]>([])
   const [templates, setTemplates] = useState<(Template & { nucleo: Nucleo | null })[]>([])
+  const [profissionais, setProfissionais] = useState<ProfissionalBase[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filters, setFilters] = useState<IndicacaoFiltersState>(initialFilters)
   const [userRole, setUserRole] = useState<string>('atendente')
@@ -90,6 +92,22 @@ export default function IndicacoesPage() {
           .order('ordem')
 
         setTemplates(templatesData || [])
+
+        // Carregar profissionais
+        const { data: profissionaisData } = await supabase
+          .from('form_profissionais')
+          .select('*')
+          .eq('ativo', true)
+          .order('ordem')
+
+        // Ordenar para colocar Dr Leonardo em primeiro
+        const sortedProfissionais = (profissionaisData || []).sort((a, b) => {
+          if (a.nome.toLowerCase().includes('leonardo')) return -1
+          if (b.nome.toLowerCase().includes('leonardo')) return 1
+          return a.ordem - b.ordem
+        })
+
+        setProfissionais(sortedProfissionais)
       } catch (error) {
         console.error('Erro ao carregar dados:', error)
         toast({
@@ -125,6 +143,15 @@ export default function IndicacoesPage() {
       // Parentesco filter
       if (filters.parentesco !== 'all' && indicacao.parentesco !== filters.parentesco) {
         return false
+      }
+
+      // Profissional filter
+      if (filters.profissional !== 'all') {
+        if (filters.profissional === 'none') {
+          if (indicacao.profissional_id) return false
+        } else {
+          if (indicacao.profissional_id !== filters.profissional) return false
+        }
       }
 
       // Date range filter
@@ -287,13 +314,14 @@ export default function IndicacoesPage() {
   // Export to CSV
   const handleExport = () => {
     const csvContent = [
-      ['Nome', 'Telefone', 'Parentesco', 'Indicado Por', 'Status', 'Data'].join(','),
+      ['Nome', 'Telefone', 'Parentesco', 'Indicado Por', 'Profissional', 'Status', 'Data'].join(','),
       ...filteredIndicacoes.map((indicacao) =>
         [
           `"${indicacao.nome || ''}"`,
           indicacao.telefone || '',
           indicacao.parentesco || '',
           `"${indicacao.indicado_por_nome || ''}"`,
+          `"${indicacao.profissional_nome || ''}"`,
           indicacao.status || '',
           indicacao.created_at ? new Date(indicacao.created_at).toLocaleDateString('pt-BR') : '',
         ].join(',')
@@ -347,6 +375,7 @@ export default function IndicacoesPage() {
             onFiltersChange={setFilters}
             onClearFilters={() => setFilters(initialFilters)}
             totalResults={filteredIndicacoes.length}
+            profissionais={profissionais}
           />
         </CardContent>
       </Card>

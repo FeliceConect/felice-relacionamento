@@ -1,3 +1,4 @@
+export { IndicarSelecionarProfissional } from './IndicarSelecionarProfissional'
 export { IndicarBuscaPaciente } from './IndicarBuscaPaciente'
 export { IndicarCartaEmocional } from './IndicarCartaEmocional'
 export { IndicarFormulario } from './IndicarFormulario'

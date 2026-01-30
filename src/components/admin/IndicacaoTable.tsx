@@ -91,17 +91,19 @@ export function IndicacaoTable({
       <Table>
         <TableHeader>
           <TableRow className="border-nude/30 hover:bg-transparent">
+            <TableHead className="text-cafe/70 w-12">#</TableHead>
             <TableHead className="text-cafe/70">Indicacao</TableHead>
             <TableHead className="text-cafe/70">Telefone</TableHead>
             <TableHead className="text-cafe/70">Parentesco</TableHead>
             <TableHead className="text-cafe/70">Indicado por</TableHead>
+            <TableHead className="text-cafe/70">Profissional</TableHead>
             <TableHead className="text-cafe/70">Status</TableHead>
             <TableHead className="text-cafe/70">Data</TableHead>
             <TableHead className="text-cafe/70 text-right">Acoes</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {indicacoes.map((indicacao) => {
+          {indicacoes.map((indicacao, index) => {
             const status = statusConfig[indicacao.status || 'aguardando']
             const initials = indicacao.nome
               ?.split(' ')
@@ -115,6 +117,11 @@ export function IndicacaoTable({
                 key={indicacao.id}
                 className="border-nude/30 hover:bg-seda/30"
               >
+                {/* Numeração */}
+                <TableCell className="text-cafe/50 font-medium">
+                  {index + 1}
+                </TableCell>
+
                 {/* Nome */}
                 <TableCell>
                   <Link
@@ -167,6 +174,13 @@ export function IndicacaoTable({
                       </a>
                     )}
                   </div>
+                </TableCell>
+
+                {/* Profissional */}
+                <TableCell>
+                  <span className="text-cafe/70">
+                    {indicacao.profissional_nome || '-'}
+                  </span>
                 </TableCell>
 
                 {/* Status */}

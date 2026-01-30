@@ -10,13 +10,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Search, X } from 'lucide-react'
+import { Search, X, Calendar } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
+import type { ProfissionalBase } from '@/types/database'
+import { format } from 'date-fns'
 
 export interface IndicacaoFiltersState {
   search: string
   status: string
   parentesco: string
+  profissional: string
   dateRange: DateRange | undefined
 }
 
@@ -25,6 +28,7 @@ interface IndicacaoFiltersProps {
   onFiltersChange: (filters: IndicacaoFiltersState) => void
   onClearFilters: () => void
   totalResults: number
+  profissionais?: ProfissionalBase[]
 }
 
 const statusOptions = [
@@ -61,11 +65,14 @@ export function IndicacaoFilters({
   onFiltersChange,
   onClearFilters,
   totalResults,
+  profissionais = [],
 }: IndicacaoFiltersProps) {
   const activeFiltersCount = [
     filters.search,
     filters.status !== 'all' ? filters.status : null,
     filters.parentesco !== 'all' ? filters.parentesco : null,
+    filters.profissional !== 'all' ? filters.profissional : null,
+    filters.dateRange?.from ? 'date' : null,
   ].filter(Boolean).length
 
   return (
@@ -121,6 +128,69 @@ export function IndicacaoFilters({
             ))}
           </SelectContent>
         </Select>
+
+        {/* Profissional */}
+        {profissionais.length > 0 && (
+          <Select
+            value={filters.profissional}
+            onValueChange={(value) =>
+              onFiltersChange({ ...filters, profissional: value })
+            }
+          >
+            <SelectTrigger className="w-full sm:w-52 input-felice">
+              <SelectValue placeholder="Todos os profissionais" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os profissionais</SelectItem>
+              <SelectItem value="none">Sem profissional</SelectItem>
+              {profissionais.map((prof) => (
+                <SelectItem key={prof.id} value={prof.id}>
+                  {prof.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {/* Filtro de Data */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center">
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-cafe/40" />
+          <span className="text-sm text-cafe/60">Periodo:</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="date"
+            value={filters.dateRange?.from ? format(filters.dateRange.from, 'yyyy-MM-dd') : ''}
+            onChange={(e) => {
+              const date = e.target.value ? new Date(e.target.value + 'T00:00:00') : undefined
+              onFiltersChange({
+                ...filters,
+                dateRange: date ? { from: date, to: filters.dateRange?.to } : undefined
+              })
+            }}
+            className="input-felice w-40"
+            placeholder="Data inicial"
+          />
+          <span className="text-cafe/40">ate</span>
+          <Input
+            type="date"
+            value={filters.dateRange?.to ? format(filters.dateRange.to, 'yyyy-MM-dd') : ''}
+            onChange={(e) => {
+              const date = e.target.value ? new Date(e.target.value + 'T23:59:59') : undefined
+              onFiltersChange({
+                ...filters,
+                dateRange: filters.dateRange?.from
+                  ? { from: filters.dateRange.from, to: date }
+                  : undefined
+              })
+            }}
+            className="input-felice w-40"
+            placeholder="Data final"
+            disabled={!filters.dateRange?.from}
+          />
+        </div>
       </div>
 
       {/* Results and clear */}

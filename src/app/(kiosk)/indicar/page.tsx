@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useIndicar } from '@/lib/hooks/useIndicar'
 import {
+  IndicarSelecionarProfissional,
   IndicarBuscaPaciente,
   IndicarCartaFormulario,
   IndicarAgradecimento,
@@ -11,6 +12,7 @@ import {
 export default function IndicarPage() {
   const {
     state,
+    selectProfissional,
     setSearchQuery,
     selectPaciente,
     goBack,
@@ -25,6 +27,21 @@ export default function IndicarPage() {
 
   return (
     <AnimatePresence mode="wait">
+      {state.step === 'profissional' && (
+        <motion.div
+          key="profissional"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <IndicarSelecionarProfissional
+            profissionais={state.profissionais}
+            isLoading={state.isLoadingProfissionais}
+            onSelectProfissional={selectProfissional}
+          />
+        </motion.div>
+      )}
+
       {state.step === 'search' && (
         <motion.div
           key="search"
@@ -39,6 +56,8 @@ export default function IndicarPage() {
             selectedPaciente={state.paciente}
             onSearchChange={setSearchQuery}
             onSelectPaciente={selectPaciente}
+            onBack={goBack}
+            profissionalNome={state.profissional?.nome}
           />
         </motion.div>
       )}

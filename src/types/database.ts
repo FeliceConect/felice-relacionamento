@@ -567,6 +567,7 @@ export type Database = {
           parentesco: string | null
           paciente_id: string
           pergunta_id: string | null
+          profissional_id: string | null
           status: string
           convertido: boolean
           created_at: string
@@ -580,6 +581,7 @@ export type Database = {
           parentesco?: string | null
           paciente_id: string
           pergunta_id?: string | null
+          profissional_id?: string | null
           status?: string
           convertido?: boolean
           created_at?: string
@@ -593,6 +595,7 @@ export type Database = {
           parentesco?: string | null
           paciente_id?: string
           pergunta_id?: string | null
+          profissional_id?: string | null
           status?: string
           convertido?: boolean
           created_at?: string
@@ -611,6 +614,13 @@ export type Database = {
             columns: ['pergunta_id']
             isOneToOne: false
             referencedRelation: 'form_perguntas'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'form_indicacoes_profissional_id_fkey'
+            columns: ['profissional_id']
+            isOneToOne: false
+            referencedRelation: 'form_profissionais'
             referencedColumns: ['id']
           }
         ]
@@ -748,10 +758,12 @@ export type Database = {
           parentesco: string | null
           paciente_id: string | null
           pergunta_id: string | null
+          profissional_id: string | null
           created_at: string | null
           updated_at: string | null
           indicado_por_nome: string | null
           indicado_por_whatsapp: string | null
+          profissional_nome: string | null
           total_followups: number | null
           status: string | null
           convertido: boolean | null

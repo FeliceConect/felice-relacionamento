@@ -2,19 +2,22 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Paciente } from '@/types/database'
+import type { Paciente, ProfissionalBase } from '@/types/database'
 import type { Indicacao } from '@/lib/utils/constants'
 
-type Step = 'search' | 'form' | 'success'
+type Step = 'profissional' | 'search' | 'form' | 'success'
 
 interface IndicarState {
   step: Step
+  profissional: ProfissionalBase | null
+  profissionais: ProfissionalBase[]
   paciente: Paciente | null
   indicacoes: Indicacao[]
   searchQuery: string
   searchResults: Paciente[]
   isSearching: boolean
   isSubmitting: boolean
+  isLoadingProfissionais: boolean
   error: string | null
 }
 
@@ -27,18 +30,48 @@ const createEmptyIndicacao = (): Indicacao => ({
 const createInitialIndicacoes = () => Array(10).fill(null).map(() => createEmptyIndicacao())
 
 const initialState: IndicarState = {
-  step: 'search',
+  step: 'profissional',
+  profissional: null,
+  profissionais: [],
   paciente: null,
   indicacoes: createInitialIndicacoes(),
   searchQuery: '',
   searchResults: [],
   isSearching: false,
   isSubmitting: false,
+  isLoadingProfissionais: true,
   error: null,
 }
 
 export function useIndicar() {
   const [state, setState] = useState<IndicarState>(initialState)
+
+  // Carregar profissionais ao iniciar
+  useEffect(() => {
+    const loadProfissionais = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('form_profissionais')
+        .select('*')
+        .eq('ativo', true)
+        .order('ordem')
+
+      // Ordenar para colocar Dr Leonardo em primeiro
+      const sortedProfissionais = (data || []).sort((a, b) => {
+        if (a.nome.toLowerCase().includes('leonardo')) return -1
+        if (b.nome.toLowerCase().includes('leonardo')) return 1
+        return a.ordem - b.ordem
+      })
+
+      setState(prev => ({
+        ...prev,
+        profissionais: sortedProfissionais,
+        isLoadingProfissionais: false,
+      }))
+    }
+
+    loadProfissionais()
+  }, [])
 
   // Debounced search effect
   useEffect(() => {
@@ -70,6 +103,10 @@ export function useIndicar() {
   }, [state.searchQuery])
 
   // Actions
+  const selectProfissional = useCallback((profissional: ProfissionalBase) => {
+    setState(prev => ({ ...prev, profissional, step: 'search' }))
+  }, [])
+
   const setSearchQuery = useCallback((query: string) => {
     setState(prev => ({ ...prev, searchQuery: query }))
   }, [])
@@ -82,6 +119,9 @@ export function useIndicar() {
     setState(prev => {
       if (prev.step === 'form') {
         return { ...prev, step: 'search', paciente: null }
+      }
+      if (prev.step === 'search') {
+        return { ...prev, step: 'profissional', profissional: null, searchQuery: '', searchResults: [] }
       }
       return prev
     })
@@ -142,6 +182,7 @@ export function useIndicar() {
         telefone_formatado: formatPhone(ind.telefone),
         parentesco: ind.parentesco || null,
         paciente_id: state.paciente!.id,
+        profissional_id: state.profissional?.id || null,
         pergunta_id: null,
         status: 'aguardando',
         convertido: false,
@@ -162,7 +203,7 @@ export function useIndicar() {
         error: 'Erro ao salvar indicações. Por favor, tente novamente.',
       }))
     }
-  }, [state.paciente, state.indicacoes])
+  }, [state.paciente, state.indicacoes, state.profissional])
 
   const reset = useCallback(() => {
     setState({
@@ -177,6 +218,7 @@ export function useIndicar() {
 
   return {
     state,
+    selectProfissional,
     setSearchQuery,
     selectPaciente,
     goBack,
