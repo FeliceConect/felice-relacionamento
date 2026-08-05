@@ -117,8 +117,8 @@ export function SendIndicacaoMessageDialog({
           <div>
             <Label className="label-felice">Template (opcional)</Label>
             <Select
-              value={selectedTemplate}
-              onValueChange={setSelectedTemplate}
+              value={selectedTemplate || 'none'}
+              onValueChange={(value) => setSelectedTemplate(value === 'none' ? '' : value)}
             >
               <SelectTrigger className="input-felice">
                 <SelectValue placeholder="Selecione um template..." />

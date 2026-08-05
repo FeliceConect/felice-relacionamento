@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase cli (estado local, nao versionar)
+supabase/.temp/
+
+# material de revisao local
+.conselho/
