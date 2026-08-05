@@ -14,6 +14,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { SendMessageDialog, MarkConvertedDialog, type LeadComInteresses } from '@/components/admin'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useSessionGuard } from '@/lib/hooks/useSessionGuard'
 import {
   ArrowLeft,
   Phone,
@@ -42,6 +43,7 @@ export default function LeadDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { toast } = useToast()
+  const { ensureSession, handleMutationError } = useSessionGuard()
   const leadId = params.id as string
 
   const [lead, setLead] = useState<LeadComDetalhes | null>(null)
@@ -156,6 +158,8 @@ export default function LeadDetailPage() {
     message: string,
     templateId?: string
   ) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -176,12 +180,8 @@ export default function LeadDetailPage() {
 
       window.location.reload()
     } catch (error) {
-      console.error('Erro:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível registrar a mensagem.',
-      })
+      console.error('Erro ao registrar mensagem:', error)
+      handleMutationError(error, 'Não foi possível registrar a mensagem.')
     }
   }
 
@@ -192,6 +192,8 @@ export default function LeadDetailPage() {
     valor: number | null
     observacoes: string
   }) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -212,16 +214,14 @@ export default function LeadDetailPage() {
 
       window.location.reload()
     } catch (error) {
-      console.error('Erro:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível registrar a conversão.',
-      })
+      console.error('Erro ao registrar conversao:', error)
+      handleMutationError(error, 'Não foi possível registrar a conversão.')
     }
   }
 
   const handleDelete = async () => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -282,11 +282,10 @@ export default function LeadDetailPage() {
       router.push('/leads')
     } catch (error) {
       console.error('Erro ao excluir lead:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível excluir o lead. Verifique se há dados relacionados.',
-      })
+      handleMutationError(
+        error,
+        'Não foi possível excluir o lead. Verifique se há dados relacionados.'
+      )
     }
   }
 

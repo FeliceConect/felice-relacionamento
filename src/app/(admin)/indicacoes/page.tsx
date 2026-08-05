@@ -14,6 +14,7 @@ import {
 } from '@/components/admin'
 import type { IndicacaoFiltersState } from '@/components/admin'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useSessionGuard } from '@/lib/hooks/useSessionGuard'
 import { Download, UserPlus } from 'lucide-react'
 import type { Nucleo, Template, IndicacaoView, ProfissionalBase } from '@/types/database'
 
@@ -27,6 +28,7 @@ const initialFilters: IndicacaoFiltersState = {
 
 export default function IndicacoesPage() {
   const { toast } = useToast()
+  const { ensureSession, handleMutationError } = useSessionGuard()
   const [indicacoes, setIndicacoes] = useState<IndicacaoView[]>([])
   const [nucleos, setNucleos] = useState<Nucleo[]>([])
   const [templates, setTemplates] = useState<(Template & { nucleo: Nucleo | null })[]>([])
@@ -187,6 +189,8 @@ export default function IndicacoesPage() {
     message: string,
     templateId?: string
   ) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -210,11 +214,7 @@ export default function IndicacoesPage() {
       window.location.reload()
     } catch (error) {
       console.error('Erro ao registrar mensagem:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel registrar a mensagem.',
-      })
+      handleMutationError(error, 'Nao foi possivel registrar a mensagem.')
     }
   }
 
@@ -225,6 +225,8 @@ export default function IndicacoesPage() {
     valor: number | null
     observacoes: string
   }) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -247,11 +249,7 @@ export default function IndicacoesPage() {
       window.location.reload()
     } catch (error) {
       console.error('Erro ao registrar conversao:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel registrar a conversao.',
-      })
+      handleMutationError(error, 'Nao foi possivel registrar a conversao.')
     }
   }
 
@@ -268,6 +266,8 @@ export default function IndicacoesPage() {
       setDeleteDialogOpen(false)
       return
     }
+
+    if (!(await ensureSession())) return
 
     const supabase = createClient()
     const indicacaoId = selectedIndicacao.id
@@ -303,11 +303,7 @@ export default function IndicacoesPage() {
       setDeleteDialogOpen(false)
     } catch (error) {
       console.error('Erro ao excluir indicacao:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel excluir a indicacao.',
-      })
+      handleMutationError(error, 'Nao foi possivel excluir a indicacao.')
     }
   }
 

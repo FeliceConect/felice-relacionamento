@@ -17,6 +17,7 @@ import {
   MarkIndicacaoConvertedDialog,
 } from '@/components/admin'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useSessionGuard } from '@/lib/hooks/useSessionGuard'
 import {
   ArrowLeft,
   Phone,
@@ -52,6 +53,7 @@ export default function IndicacaoDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { toast } = useToast()
+  const { ensureSession, handleMutationError } = useSessionGuard()
   const indicacaoId = params.id as string
 
   const [indicacao, setIndicacao] = useState<IndicacaoComDetalhes | null>(null)
@@ -179,6 +181,8 @@ export default function IndicacaoDetailPage() {
     message: string,
     templateId?: string
   ) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -199,12 +203,8 @@ export default function IndicacaoDetailPage() {
 
       window.location.reload()
     } catch (error) {
-      console.error('Erro:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel registrar a mensagem.',
-      })
+      console.error('Erro ao registrar mensagem:', error)
+      handleMutationError(error, 'Nao foi possivel registrar a mensagem.')
     }
   }
 
@@ -215,6 +215,8 @@ export default function IndicacaoDetailPage() {
     valor: number | null
     observacoes: string
   }) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -235,16 +237,14 @@ export default function IndicacaoDetailPage() {
 
       window.location.reload()
     } catch (error) {
-      console.error('Erro:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel registrar a conversao.',
-      })
+      console.error('Erro ao registrar conversao:', error)
+      handleMutationError(error, 'Nao foi possivel registrar a conversao.')
     }
   }
 
   const handleUpdateProfissional = async (profissionalId: string | null) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
     setIsSavingProfissional(true)
 
@@ -266,17 +266,15 @@ export default function IndicacaoDetailPage() {
       })
     } catch (error) {
       console.error('Erro ao atualizar profissional:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel atualizar o profissional.',
-      })
+      handleMutationError(error, 'Nao foi possivel atualizar o profissional.')
     } finally {
       setIsSavingProfissional(false)
     }
   }
 
   const handleDelete = async () => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -317,11 +315,7 @@ export default function IndicacaoDetailPage() {
       router.push('/indicacoes')
     } catch (error) {
       console.error('Erro ao excluir indicacao:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Nao foi possivel excluir a indicacao.',
-      })
+      handleMutationError(error, 'Nao foi possivel excluir a indicacao.')
     }
   }
 

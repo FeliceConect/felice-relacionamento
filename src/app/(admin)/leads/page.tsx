@@ -14,6 +14,7 @@ import {
 } from '@/components/admin'
 import type { LeadComInteresses, LeadFiltersState } from '@/components/admin'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useSessionGuard } from '@/lib/hooks/useSessionGuard'
 import { Download, Users } from 'lucide-react'
 import type { Nucleo, Template } from '@/types/database'
 
@@ -26,6 +27,7 @@ const initialFilters: LeadFiltersState = {
 
 export default function LeadsPage() {
   const { toast } = useToast()
+  const { ensureSession, handleMutationError } = useSessionGuard()
   const [leads, setLeads] = useState<LeadComInteresses[]>([])
   const [nucleos, setNucleos] = useState<Nucleo[]>([])
   const [templates, setTemplates] = useState<(Template & { nucleo: Nucleo | null })[]>([])
@@ -177,6 +179,8 @@ export default function LeadsPage() {
     message: string,
     templateId?: string
   ) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -200,11 +204,7 @@ export default function LeadsPage() {
       window.location.reload()
     } catch (error) {
       console.error('Erro ao registrar mensagem:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível registrar a mensagem.',
-      })
+      handleMutationError(error, 'Não foi possível registrar a mensagem.')
     }
   }
 
@@ -215,6 +215,8 @@ export default function LeadsPage() {
     valor: number | null
     observacoes: string
   }) => {
+    if (!(await ensureSession())) return
+
     const supabase = createClient()
 
     try {
@@ -237,11 +239,7 @@ export default function LeadsPage() {
       window.location.reload()
     } catch (error) {
       console.error('Erro ao registrar conversão:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível registrar a conversão.',
-      })
+      handleMutationError(error, 'Não foi possível registrar a conversão.')
     }
   }
 
@@ -258,6 +256,8 @@ export default function LeadsPage() {
       setDeleteDialogOpen(false)
       return
     }
+
+    if (!(await ensureSession())) return
 
     const supabase = createClient()
     const leadId = selectedLead.id
@@ -305,11 +305,7 @@ export default function LeadsPage() {
       setDeleteDialogOpen(false)
     } catch (error) {
       console.error('Erro ao excluir lead:', error)
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível excluir o lead.',
-      })
+      handleMutationError(error, 'Não foi possível excluir o lead.')
     }
   }
 

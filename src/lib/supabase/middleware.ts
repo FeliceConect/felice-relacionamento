@@ -43,6 +43,7 @@ export async function updateSession(request: NextRequest) {
   // Protected page routes check (not API routes - they handle their own auth or use admin client)
   const isProtectedPage = request.nextUrl.pathname.startsWith('/dashboard') ||
                           request.nextUrl.pathname.startsWith('/leads') ||
+                          request.nextUrl.pathname.startsWith('/indicacoes') ||
                           request.nextUrl.pathname.startsWith('/templates') ||
                           request.nextUrl.pathname.startsWith('/perguntas') ||
                           request.nextUrl.pathname.startsWith('/profissionais') ||
