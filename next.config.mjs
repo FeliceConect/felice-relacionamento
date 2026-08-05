@@ -7,16 +7,11 @@ const withPWA = withPWAInit({
   skipWaiting: true,
   runtimeCaching: [
     {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'supabase-cache',
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60, // 1 hora
-        },
-        networkTimeoutSeconds: 10,
-      },
+      // Auth e dados nunca podem ser cacheados: uma resposta antiga faz a tela
+      // parecer logada depois da sessao expirar, e a gravacao falha sem explicacao.
+      // Imagens publicas do Storage seguem pela regra de imagem abaixo.
+      urlPattern: /^https:\/\/.*\.supabase\.co\/(auth|rest)\/v1\/.*/i,
+      handler: 'NetworkOnly',
     },
     {
       urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
